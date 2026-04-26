@@ -1,0 +1,77 @@
+#include <iostream>
+#include <unordered_map>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Bank {
+private:
+    // Maps User ID to their Balance
+    unordered_map<string, long long> accounts;
+
+public:
+    string create(string userID, long long balance) {
+        if (accounts.find(userID) == accounts.end()) {
+            accounts[userID] = balance;
+            return "true";
+        } else {
+            accounts[userID] += balance;
+            return "false";
+        }
+    }
+
+    string debit(string userID, long long amount) {
+        if (accounts.find(userID) != accounts.end() && accounts[userID] >= amount) {
+            accounts[userID] -= amount;
+            return "true";
+        }
+        return "false";
+    }
+
+    string credit(string userID, long long amount) {
+        if (accounts.find(userID) != accounts.end()) {
+            accounts[userID] += amount;
+            return "true";
+        }
+        return "false";
+    }
+
+    long long balance(string userID) {
+        if (accounts.find(userID) == accounts.end()) {
+            return -1;
+        }
+        return accounts[userID];
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    int Q;
+    if (!(cin >> Q)) return 0;
+
+    Bank bankSystem;
+    string query, userID;
+    long long amount;
+
+    while (Q--) {
+        cin >> query;
+        if (query == "CREATE") {
+            cin >> userID >> amount;
+            cout << bankSystem.create(userID, amount) << "\n";
+        } else if (query == "DEBIT") {
+            cin >> userID >> amount;
+            cout << bankSystem.debit(userID, amount) << "\n";
+        } else if (query == "CREDIT") {
+            cin >> userID >> amount;
+            cout << bankSystem.credit(userID, amount) << "\n";
+        } else if (query == "BALANCE") {
+            cin >> userID;
+            cout << bankSystem.balance(userID) << "\n";
+        }
+    }
+
+    return 0;
+}
