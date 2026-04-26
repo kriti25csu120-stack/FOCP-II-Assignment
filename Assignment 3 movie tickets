@@ -1,0 +1,80 @@
+#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class MovieTicket {
+private:
+    // Maps Movie ID to a Set of Customer IDs who have booked it
+    unordered_map<string, unordered_set<string>> bookings;
+    const int MAX_SLOTS = 100;
+
+public:
+    string book(string customerID, string movieID) {
+        // If the movie doesn't exist in our map yet, accessing it will create it
+        auto& customerSet = bookings[movieID];
+
+        // Check if movie is sold out or customer already booked
+        if (customerSet.size() >= MAX_SLOTS || customerSet.count(customerID)) {
+            return "false";
+        }
+
+        customerSet.insert(customerID);
+        return "true";
+    }
+
+    string cancel(string customerID, string movieID) {
+        if (bookings.find(movieID) != bookings.end()) {
+            if (bookings[movieID].erase(customerID)) {
+                return "true";
+            }
+        }
+        return "false";
+    }
+
+    string is_booked(string customerID, string movieID) {
+        if (bookings.find(movieID) != bookings.end()) {
+            if (bookings[movieID].count(customerID)) {
+                return "true";
+            }
+        }
+        return "false";
+    }
+
+    int available_tickets(string movieID) {
+        if (bookings.find(movieID) == bookings.end()) {
+            return MAX_SLOTS;
+        }
+        return MAX_SLOTS - (int)bookings[movieID].size();
+    }
+};
+
+int main() {
+    int Q;
+    if (!(cin >> Q)) return 0;
+
+    MovieTicket system;
+    string query, arg1, arg2;
+
+    while (Q--) {
+        cin >> query;
+        if (query == "BOOK") {
+            cin >> arg1 >> arg2;
+            cout << system.book(arg1, arg2) << endl;
+        } else if (query == "CANCEL") {
+            cin >> arg1 >> arg2;
+            cout << system.cancel(arg1, arg2) << endl;
+        } else if (query == "IS_BOOKED") {
+            cin >> arg1 >> arg2;
+            cout << system.is_booked(arg1, arg2) << endl;
+        } else if (query == "AVAILABLE_TICKETS") {
+            cin >> arg1;
+            cout << system.available_tickets(arg1) << endl;
+        }
+    }
+
+    return 0;
+}
